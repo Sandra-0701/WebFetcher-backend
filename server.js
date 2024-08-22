@@ -6,7 +6,14 @@ const app = express();
 const port = process.env.PORT || 5000;  // Use Vercel's port or fallback to 5000 for local development
 
 app.use(express.json());
-app.use(cors());
+
+// Setup CORS to allow requests only from your frontend domain
+const corsOptions = {
+  origin: 'https://web-fetcher-frontend.vercel.app',  // Your frontend URL
+  optionsSuccessStatus: 200,  // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
 
 // Route imports
 const extractUrls = require('./routes/extractUrls');
