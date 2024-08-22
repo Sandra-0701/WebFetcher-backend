@@ -5,15 +5,13 @@ require('dotenv').config(); // Load environment variables
 const app = express();
 const port = process.env.PORT || 5000;  // Use Vercel's port or fallback to 5000 for local development
 
+// Middleware
 app.use(express.json());
-
-// CORS configuration to allow your frontend origin
-const corsOptions = {
-  origin: 'https://web-fetcher-frontend.vercel.app', // Your frontend URL
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions)); // Apply this middleware to allow CORS
+app.use(cors({
+  origin: '*', // Adjust this based on your front-end origin or set it to '*' for any origin
+  methods: ['GET', 'POST'], // Restrict allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
+}));
 
 // Route imports
 const extractUrls = require('./routes/extractUrls');
@@ -29,7 +27,7 @@ app.get('/api/test', (req, res) => {
   res.send('Server is running correctly!');
 });
 
-// Route use with error logging and handling
+// Route use
 app.use('/api/extract-urls', extractUrls);
 app.use('/api/link-details', linkDetails);
 app.use('/api/image-details', imageDetails);
@@ -38,10 +36,15 @@ app.use('/api/page-properties', pageProperties);
 app.use('/api/heading-hierarchy', headingHierarchy);
 app.use('/api/all-details', allDetails);
 
-// Error handling for all routes
+// Error handling for unknown routes
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+// Global error handler
 app.use((err, req, res, next) => {
-  console.error('An error occurred:', err.stack);
-  res.status(500).json({ message: 'Internal Server Error' });
+  console.error('Internal Server Error:', err.message);
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });
 });
 
 // Start server
