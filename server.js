@@ -17,6 +17,11 @@ const pageProperties = require('./routes/pageProperties');
 const headingHierarchy = require('./routes/headingHierarchy');
 const allDetails = require('./routes/allDetails');
 
+// Test route
+app.get('/api/test', (req, res) => {
+  res.send('Server is running correctly!');
+});
+
 // Route use
 app.use('/api/extract-urls', extractUrls);
 app.use('/api/link-details', linkDetails);
