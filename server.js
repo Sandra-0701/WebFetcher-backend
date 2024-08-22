@@ -7,13 +7,13 @@ const port = process.env.PORT || 5000;  // Use Vercel's port or fallback to 5000
 
 app.use(express.json());
 
-// Setup CORS to allow requests only from your frontend domain
+// CORS configuration to allow your frontend origin
 const corsOptions = {
-  origin: 'https://web-fetcher-frontend.vercel.app',  // Your frontend URL
-  optionsSuccessStatus: 200,  // Some legacy browsers choke on 204
+  origin: 'https://web-fetcher-frontend.vercel.app', // Your frontend URL
+  optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); // Apply this middleware to allow CORS
 
 // Route imports
 const extractUrls = require('./routes/extractUrls');
@@ -29,7 +29,7 @@ app.get('/api/test', (req, res) => {
   res.send('Server is running correctly!');
 });
 
-// Route use
+// Route use with error logging and handling
 app.use('/api/extract-urls', extractUrls);
 app.use('/api/link-details', linkDetails);
 app.use('/api/image-details', imageDetails);
@@ -37,6 +37,12 @@ app.use('/api/video-details', videoDetails);
 app.use('/api/page-properties', pageProperties);
 app.use('/api/heading-hierarchy', headingHierarchy);
 app.use('/api/all-details', allDetails);
+
+// Error handling for all routes
+app.use((err, req, res, next) => {
+  console.error('An error occurred:', err.stack);
+  res.status(500).json({ message: 'Internal Server Error' });
+});
 
 // Start server
 app.listen(port, () => {
